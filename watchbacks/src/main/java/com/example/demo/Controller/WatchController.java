@@ -1,0 +1,87 @@
+package com.example.demo.Controller;
+
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.example.demo.model.Watch;
+import com.example.demo.repository.WatchRepo;
+
+
+
+@CrossOrigin("*")
+@RestController
+@RequestMapping("/Watchs")
+
+public class WatchController {
+
+	@Autowired
+    private WatchRepo watchRepository;
+    @GetMapping(value="/get")
+    public List<Watch> getAllWatchs(){
+        return watchRepository.findAll();
+    }
+    @GetMapping(value="/{currentPage}/{itemsPerPage}/{sortBy}/{sortOrder}")
+    public Page<Watch> getData(@PathVariable(value="currentPage") int page,
+                                              @PathVariable(value= "itemsPerPage") int size,
+                                              @PathVariable(value= "sortBy") String field,
+                                              @PathVariable(value= "sortOrder") String direction) {
+    	Pageable paging;
+   if(direction.equals("asc")) {
+   paging=PageRequest.of(page-1, size).withSort(Sort.by(field));
+   }
+   else {
+	   paging=PageRequest.of(page-1, size).withSort(Sort.by(field).descending());       
+   }
+  return  watchRepository.findAll(paging);
+    }	
+    @PostMapping
+    public Watch createWatch(@RequestBody Watch Watch) {
+        return watchRepository.save(Watch);
+    }
+
+    @GetMapping("{id}")
+    public ResponseEntity<Optional<Watch>> getWatchById(@PathVariable  int id){
+        Optional<Watch> Watch = watchRepository.findById(id);
+        return ResponseEntity.ok(Watch);
+    }
+
+    @PutMapping("{id}")
+	public Watch updateBookDetails(@RequestBody Watch b)
+	{
+		System.out.println("Changes Made Have Been Successfully Updated");
+		return watchRepository.save(b);		
+	}
+    @DeleteMapping("{id}")
+	public String deleteWatch(@PathVariable int id)
+	{
+    	watchRepository.deleteById(id);
+		return "Id : "+id+" is deleted";
+	}
+    @DeleteMapping
+    public String deleteAllWatch()
+    {
+    	watchRepository.deleteAll();
+    	return "All Watchs deleted";
+    }
+	
+	
+	
+	
+	
+}

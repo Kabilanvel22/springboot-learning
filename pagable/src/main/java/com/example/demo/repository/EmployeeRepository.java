@@ -1,0 +1,25 @@
+package com.example.demo.repository;
+
+import java.util.List;
+
+import org.springframework.data.repository.PagingAndSortingRepository;
+import org.springframework.stereotype.Repository;
+
+import com.emaxple.demo.model.Employee;
+
+
+
+
+
+@Repository
+public interface EmployeeRepository extends PagingAndSortingRepository<Employee, Long> {
+
+	List<Employee> findByNameStartingWith(String prefix);
+
+	List<Employee> findAllEmployeesByDept(String dept);
+
+	List<Employee> findByNameEndingWith(String suffix);
+
+	int updateEmployeeSalary(double sal, long id);
+
+	}
